@@ -1,22 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { setSearch } from '../redux/bookSlice';
-import { TextField, FormControl } from '@mui/material';
 
 const Search = () => {
   const dispatch = useDispatch();
 
-  const handleSearchChange = (event) => {
-    dispatch(setSearch(event.target.value));
+  const handleSearchChange = (e) => {
+    dispatch(setSearch(e.target.value));
   };
 
   return (
-    <FormControl sx={{ minWidth: 120 }}>
-      <TextField
-        label="Поиск по названию или автору"
-        onChange={handleSearchChange}
-      />
-    </FormControl>
+    <div>
+      <label>Поиск по названию или автору</label>
+      <input type="text" onChange={handleSearchChange} />
+    </div>
   );
 };
 

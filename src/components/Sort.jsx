@@ -1,25 +1,25 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { setSort } from '../redux/bookSlice';
-import { MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+
+const sortOptions = ['Название', 'Автор', 'Год', 'Рейтинг'];
 
 const Sort = () => {
   const dispatch = useDispatch();
 
-  const handleSortChange = (event) => {
-    dispatch(setSort(event.target.value));
+  const handleSortChange = (e) => {
+    dispatch(setSort(e.target.value));
   };
 
   return (
-    <FormControl sx={{ minWidth: 120 }}>
-      <InputLabel>Сортировать по</InputLabel>
-      <Select onChange={handleSortChange} displayEmpty>
-        <MenuItem value="title">Названию</MenuItem>
-        <MenuItem value="author">Автору</MenuItem>
-        <MenuItem value="year">Году</MenuItem>
-        <MenuItem value="rating">Рейтингу</MenuItem>
-      </Select>
-    </FormControl>
+    <div>
+      <label>Сортировать по</label>
+      <select onChange={handleSortChange} style={{ minWidth: '120px' }}>
+        {sortOptions.map((option, i) => (
+          <option key={i} value={option}>{option}</option>
+        ))}
+      </select>
+    </div>
   );
 };
 
