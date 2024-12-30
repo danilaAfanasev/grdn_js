@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeBook, toggleReadStatus } from '../redux/bookSlice';
 import BookItem from './BookItem';
-import { List } from '@mui/material';
 
 const BookList = () => {
   const { books, filter, sort, search } = useSelector(state => state.books);
@@ -23,25 +22,32 @@ const BookList = () => {
 
   if (sort) {
     filteredBooks = [...filteredBooks].sort((a, b) => {
-      if (sort === 'title') return a.title.localeCompare(b.title);
-      if (sort === 'author') return a.author.localeCompare(b.author);
-      if (sort === 'year') return a.year - b.year;
-      if (sort === 'rating') return b.rating - a.rating;
-      return 0;
+      switch (sort) {
+        case 'Название':
+          return a.title.localeCompare(b.title);
+        case 'Автор':
+          return a.author.localeCompare(b.author);
+        case 'Год':
+          return a.year - b.year;
+        case 'Рейтинг':
+          return b.rating - a.rating;
+        default:
+          return 0;
+      }
     });
   }
 
   return (
-    <List>
-      {filteredBooks.map(book => (
+    <div className="book-list">
+      {filteredBooks.map((book, i) => (
         <BookItem
-          key={book.id}
+          key={i}
           book={book}
           onRemove={() => dispatch(removeBook(book.id))}
           onToggleRead={() => dispatch(toggleReadStatus(book.id))}
         />
       ))}
-    </List>
+    </div>
   );
 };
 
