@@ -44,6 +44,11 @@ const bookSlice = createSlice({
         book.read = !book.read;
       }
     },
+    toggleAllReadStatus: (state, action) => {
+      state.books.forEach(book => {
+        book.read = action.payload;
+      });
+    },
     setFilter: (state, action) => {
       state.filter = action.payload;
     },
@@ -62,5 +67,5 @@ const bookSlice = createSlice({
   },
 });
 
-export const { addBook, removeBook, toggleReadStatus, setFilter, setSort, setSearch, setRating } = bookSlice.actions;
+export const { addBook, removeBook, toggleReadStatus, toggleAllReadStatus, setFilter, setSort, setSearch, setRating } = bookSlice.actions;
 export default bookSlice.reducer;

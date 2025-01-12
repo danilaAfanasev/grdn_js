@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { addBook } from '../redux/bookSlice';
-import Rating from '@mui/material/Rating';
+import { useForm, Controller } from 'react-hook-form';
+import { TextField, MenuItem, Button, Rating, Box, Typography, FormControl, FormLabel } from '@mui/material';
 
 const genreOptions = [
   'Фантастика', 'Детектив', 'Роман', 'Научная фантастика', 'Исторический роман',
@@ -9,84 +10,89 @@ const genreOptions = [
 ];
 
 const BookForm = ({ onClose }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    year: '',
-    genre: '',
-    rating: 0,
-  });
   const dispatch = useDispatch();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
+    defaultValues: {
+      title: '',
+      author: '',
+      year: '',
+      genre: '',
+      rating: 0,
+    },
+  });
 
-  const handleRatingChange = (event, newValue) => {
-    setFormData({
-      ...formData,
-      rating: newValue,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.title && formData.author && formData.year && formData.genre && formData.rating) {
-      const newBook = {
-        id: Date.now(),
-        ...formData,
-        read: false,
-      };
-      dispatch(addBook(newBook));
-      setFormData({
-        title: '',
-        author: '',
-        year: '',
-        genre: '',
-        rating: 0,
-      });
-      onClose();
-    } else {
-      alert('Пожалуйста, заполните все поля');
-    }
+  const onSubmit = (data) => {
+    const newBook = {
+      id: Date.now(),
+      ...data,
+      read: false,
+    };
+    dispatch(addBook(newBook));
+    onClose();
   };
 
   return (
-    <form className="modal-form" onSubmit={handleSubmit}>
-      <div>
-        <label>Название</label>
-        <input type="text" name="title" value={formData.title} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Автор</label>
-        <input type="text" name="author" value={formData.author} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Год</label>
-        <input type="number" name="year" value={formData.year} onChange={handleChange} required />
-      </div>
-      <div>
-        <label>Жанр</label>
-        <select name="genre" value={formData.genre} onChange={handleChange} required>
-          <option value="">Выберите жанр</option>
-          {genreOptions.map((genre, i) => (
-            <option key={i} value={genre}>{genre}</option>
-          ))}
-        </select>
-      </div>
-      <div className="rating-label">
-        <label>Рейтинг</label>
-        <Rating
-          name="simple-controlled"
-          value={formData.rating}
-          onChange={handleRatingChange}
+    <form id="book-form" onSubmit={handleSubmit(onSubmit)}>
+      <TextField
+        {...register('title', { required: 'Название обязательно' })}
+        label="Название"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        error={!!errors.title}
+        helperText={errors.title?.message}
+      />
+      <TextField
+        {...register('author', { required: 'Автор обязателен' })}
+        label="Автор"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        error={!!errors.author}
+        helperText={errors.author?.message}
+      />
+      <TextField
+        {...register('year', {
+          required: 'Год обязателен',
+          min: { value: 0, message: 'Год должен быть положительным числом' },
+        })}
+        label="Год"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        error={!!errors.year}
+        helperText={errors.year?.message}
+      />
+      <TextField
+        {...register('genre', { required: 'Жанр обязателен' })}
+        select
+        label="Жанр"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        error={!!errors.genre}
+        helperText={errors.genre?.message}
+      >
+        {genreOptions.map((genre, i) => (
+          <MenuItem key={i} value={genre}>{genre}</MenuItem>
+        ))}
+      </TextField>
+      <FormControl component="fieldset" margin="normal" fullWidth>
+        <FormLabel component="legend">Рейтинг</FormLabel>
+        <Controller
+          name="rating"
+          control={control}
+          rules={{ required: 'Рейтинг обязателен', min: 1, max: 5 }}
+          render={({ field }) => (
+            <Rating
+              {...field}
+              onChange={(event, newValue) => field.onChange(newValue)}
+            />
+          )}
         />
-      </div>
-      <button type="submit">Добавить книгу</button>
+      </FormControl>
+      {errors.rating && <Typography color="error">{errors.rating.message}</Typography>}
     </form>
   );
 };

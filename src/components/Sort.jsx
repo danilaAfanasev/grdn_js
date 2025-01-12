@@ -1,25 +1,39 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setSort } from '../redux/bookSlice';
+import { TextField, MenuItem, Box } from '@mui/material';
 
-const sortOptions = ['Название', 'Автор', 'Год', 'Рейтинг'];
+const sortOptions = [
+  { value: 'title', label: 'По названию' },
+  { value: 'author', label: 'По автору' },
+  { value: 'year', label: 'По году' },
+  { value: 'rating', label: 'По рейтингу' },
+];
 
 const Sort = () => {
   const dispatch = useDispatch();
+  const sort = useSelector((state) => state.books.sort);
 
-  const handleSortChange = (e) => {
-    dispatch(setSort(e.target.value));
+  const handleChange = (event) => {
+    dispatch(setSort(event.target.value));
   };
 
   return (
-    <div>
-      <label>Сортировать по</label>
-      <select onChange={handleSortChange} style={{ minWidth: '120px' }}>
+    <Box sx={{ minWidth: 200 }}>
+      <TextField
+        select
+        label="Сортировка"
+        value={sort}
+        onChange={handleChange}
+        variant="outlined"
+        fullWidth
+      >
+        <MenuItem value="">Без сортировки</MenuItem>
         {sortOptions.map((option, i) => (
-          <option key={i} value={option}>{option}</option>
+          <MenuItem key={i} value={option.value}>{option.label}</MenuItem>
         ))}
-      </select>
-    </div>
+      </TextField>
+    </Box>
   );
 };
 

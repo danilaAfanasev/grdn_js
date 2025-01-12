@@ -1,9 +1,10 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeBook, toggleReadStatus } from '../redux/bookSlice';
+import { removeBook, toggleReadStatus, toggleAllReadStatus } from '../redux/bookSlice';
 import BookItem from './BookItem';
+import { Box, FormControlLabel, Checkbox } from '@mui/material';
 
-const BookList = () => {
+const BookList = ({ onBookRemoved }) => {
   const { books, filter, sort, search } = useSelector(state => state.books);
   const dispatch = useDispatch();
 
@@ -23,13 +24,13 @@ const BookList = () => {
   if (sort) {
     filteredBooks = [...filteredBooks].sort((a, b) => {
       switch (sort) {
-        case 'Название':
+        case 'title':
           return a.title.localeCompare(b.title);
-        case 'Автор':
+        case 'author':
           return a.author.localeCompare(b.author);
-        case 'Год':
+        case 'year':
           return a.year - b.year;
-        case 'Рейтинг':
+        case 'rating':
           return b.rating - a.rating;
         default:
           return 0;
@@ -37,17 +38,29 @@ const BookList = () => {
     });
   }
 
+  const handleToggleAllRead = () => {
+    const allRead = filteredBooks.every(book => book.read);
+    dispatch(toggleAllReadStatus(!allRead));
+  };
+
   return (
-    <div className="book-list">
+    <Box>
+      <FormControlLabel
+        control={<Checkbox onChange={handleToggleAllRead} />}
+        label="Выделить все книги"
+      />
       {filteredBooks.map((book, i) => (
         <BookItem
           key={i}
-          book={book}
-          onRemove={() => dispatch(removeBook(book.id))}
+          book={{ ...book, description: 'Краткое содержание книги ' + book.title }}
+          onRemove={() => {
+            dispatch(removeBook(book.id));
+            onBookRemoved();
+          }}
           onToggleRead={() => dispatch(toggleReadStatus(book.id))}
         />
       ))}
-    </div>
+    </Box>
   );
 };
 

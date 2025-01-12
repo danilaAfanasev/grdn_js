@@ -64,6 +64,9 @@ body {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
 }
 
 .book-stats p {
@@ -89,6 +92,12 @@ body {
 
 .book-info {
   flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.book-info input[type="checkbox"] {
+  margin-right: 10px;
 }
 
 .book-info h3, .book-info p {
@@ -98,10 +107,6 @@ body {
 .book-actions {
   display: flex;
   align-items: center;
-}
-
-.book-actions input[type="checkbox"] {
-  margin-right: 10px;
 }
 
 .book-actions .MuiRating-root {
@@ -173,15 +178,20 @@ body {
   flex-direction: column;
 }
 
-.modal-form label {
+.modal-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.modal-form .form-group label {
   margin-bottom: 5px;
 }
 
-.modal-form input, .modal-form select {
+.modal-form .form-group input, .modal-form .form-group select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  margin-bottom: 20px;
 }
 
 .modal-form .rating-label {
@@ -192,6 +202,11 @@ body {
 
 .modal-form .rating-label label {
   margin-right: 10px;
+}
+
+.modal-form .rating-input {
+  display: flex;
+  align-items: center;
 }
 
 .modal-form .MuiRating-root {
@@ -210,4 +225,14 @@ body {
 
 .modal-form button:hover {
   background-color: #0056b3;
+}
+
+.select-all {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.select-all label {
+  margin-left: 10px;
 }
