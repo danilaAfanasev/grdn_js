@@ -1,12 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeBook, toggleReadStatus, toggleAllReadStatus } from '../redux/bookSlice';
 import BookItem from './BookItem';
 import { Box, FormControlLabel, Checkbox } from '@mui/material';
+import ConfirmationDialog from './ConfirmationDialog';
 
-const BookList = ({ onBookRemoved }) => {
+const BookList = ({ onBookRemoved, openModal }) => {
   const { books, filter, sort, search } = useSelector(state => state.books);
   const dispatch = useDispatch();
+  const [isToggleAllReadDialogOpen, setIsToggleAllReadDialogOpen] = useState(false);
+  const [isRemoveBookDialogOpen, setIsRemoveBookDialogOpen] = useState(false);
+  const [allRead, setAllRead] = useState(false);
+  const [checkboxChecked, setCheckboxChecked] = useState(false);
+  const [bookToRemove, setBookToRemove] = useState(null);
 
   let filteredBooks = books;
 
@@ -39,27 +45,67 @@ const BookList = ({ onBookRemoved }) => {
   }
 
   const handleToggleAllRead = () => {
-    const allRead = filteredBooks.every(book => book.read);
-    dispatch(toggleAllReadStatus(!allRead));
+    setAllRead(!filteredBooks.every(book => book.read));
+    setIsToggleAllReadDialogOpen(true);
+  };
+
+  const handleConfirmToggleAllRead = () => {
+    dispatch(toggleAllReadStatus(allRead));
+    setCheckboxChecked(allRead);
+    setIsToggleAllReadDialogOpen(false);
+  };
+
+  const handleCloseToggleAllReadDialog = () => {
+    setIsToggleAllReadDialogOpen(false);
+  };
+
+  const openConfirmationDialog = (bookId) => {
+    setBookToRemove(bookId);
+    setIsRemoveBookDialogOpen(true);
+  };
+
+  const handleConfirmRemove = () => {
+    dispatch(removeBook(bookToRemove));
+    onBookRemoved();
+    setIsRemoveBookDialogOpen(false);
+  };
+
+  const handleCloseRemoveBookDialog = () => {
+    setIsRemoveBookDialogOpen(false);
   };
 
   return (
     <Box>
       <FormControlLabel
-        control={<Checkbox onChange={handleToggleAllRead} />}
+        control={
+          <Checkbox
+            checked={checkboxChecked}
+            onChange={handleToggleAllRead}
+          />
+        }
         label="Выделить все книги"
       />
       {filteredBooks.map((book, i) => (
         <BookItem
           key={i}
-          book={{ ...book, description: 'Краткое содержание книги ' + book.title }}
-          onRemove={() => {
-            dispatch(removeBook(book.id));
-            onBookRemoved();
-          }}
+          book={book}
+          onRemove={() => openConfirmationDialog(book.id)}
           onToggleRead={() => dispatch(toggleReadStatus(book.id))}
+          onEdit={openModal}
         />
       ))}
+      <ConfirmationDialog
+        open={isToggleAllReadDialogOpen}
+        onClose={handleCloseToggleAllReadDialog}
+        onConfirm={handleConfirmToggleAllRead}
+        message={`Вы уверены, что хотите отметить все книги как ${allRead ? 'прочитанные' : 'непрочитанные'}?`}
+      />
+      <ConfirmationDialog
+        open={isRemoveBookDialogOpen}
+        onClose={handleCloseRemoveBookDialog}
+        onConfirm={handleConfirmRemove}
+        message="Вы уверены, что хотите удалить эту книгу из библиотеки?"
+      />
     </Box>
   );
 };

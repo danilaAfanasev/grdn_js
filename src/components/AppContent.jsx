@@ -1,3 +1,4 @@
+// src/components/AppContent.js
 import React, { useState } from 'react';
 import BookList from './BookList';
 import Filter from './Filter';
@@ -10,7 +11,9 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import AddIcon from '@mui/icons-material/Add';
 import '../styles/main.scss';
 
-const AppContent = ({ isModalOpen, openModal, closeModal }) => {
+const AppContent = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [bookToEdit, setBookToEdit] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleCloseSnackbar = (event, reason) => {
@@ -24,6 +27,16 @@ const AppContent = ({ isModalOpen, openModal, closeModal }) => {
     setOpenSnackbar(true);
   };
 
+  const openModal = (book = null) => {
+    setBookToEdit(book);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setBookToEdit(null);
+    setIsModalOpen(false);
+  };
+
   return (
     <Container maxWidth="lg">
       <AppBar position="static">
@@ -34,12 +47,12 @@ const AppContent = ({ isModalOpen, openModal, closeModal }) => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Моя библиотека
           </Typography>
-          <Button color="inherit" startIcon={<AddIcon />} onClick={openModal}>
+          <Button color="inherit" startIcon={<AddIcon />} onClick={() => openModal()}>
             Добавить книгу
           </Button>
         </Toolbar>
       </AppBar>
-      <ModalWindow isOpen={isModalOpen} onClose={closeModal} />
+      <ModalWindow isOpen={isModalOpen} onClose={closeModal} bookToEdit={bookToEdit} />
       <Box mt={4} mb={4} border={1} borderColor="grey.300" borderRadius={2} p={2}>
         <Box display="flex" justifyContent="space-between" mb={2}>
           <Filter />
@@ -48,7 +61,7 @@ const AppContent = ({ isModalOpen, openModal, closeModal }) => {
         </Box>
         <BookStats />
       </Box>
-      <BookList onBookRemoved={handleBookRemoved} />
+      <BookList onBookRemoved={handleBookRemoved} openModal={openModal} />
       <Snackbar
         open={openSnackbar}
         autoHideDuration={3000}

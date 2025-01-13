@@ -27,7 +27,7 @@ const App = () => {
         <CssBaseline />
         <FormControlLabel
           control={<Switch checked={isDarkMode} onChange={toggleTheme} />}
-          label="Темная тема"
+          label={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}
           sx={{ position: 'absolute', top: 10, right: 10 }}
         />
         <AppContent isModalOpen={isModalOpen} openModal={openModal} closeModal={closeModal} />
