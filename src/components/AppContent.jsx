@@ -1,4 +1,3 @@
-// src/components/AppContent.js
 import React, { useState } from 'react';
 import BookList from './BookList';
 import Filter from './Filter';
@@ -6,10 +5,11 @@ import Sort from './Sort';
 import Search from './Search';
 import BookStats from './BookStats';
 import ModalWindow from './ModalWindow';
-import { AppBar, Toolbar, Typography, IconButton, Button, Container, Box, Snackbar } from '@mui/material';
+import { AppBar, Toolbar, Typography, IconButton, Button, Container, Box, Snackbar, Link } from '@mui/material';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import AddIcon from '@mui/icons-material/Add';
 import '../styles/main.scss';
+import { Link as RouterLink } from 'react-router-dom';
 
 const AppContent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +45,17 @@ const AppContent = () => {
             <LibraryBooksIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Моя библиотека
+            <Link component={RouterLink} to="/" color="inherit" underline="none">
+              Моя библиотека
+            </Link>
+            {' | '}
+            <Link component={RouterLink} to="/photos" color="inherit" underline="none">
+              Фото
+            </Link>
+            {' | '}
+            <Link component={RouterLink} to="/todos" color="inherit" underline="none">
+              Список дел
+            </Link>
           </Typography>
           <Button color="inherit" startIcon={<AddIcon />} onClick={() => openModal()}>
             Добавить книгу

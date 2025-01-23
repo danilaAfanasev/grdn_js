@@ -1,4 +1,3 @@
-// src/components/BookForm.js
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { addBook, editBook } from '../redux/bookSlice';
@@ -39,12 +38,9 @@ const BookForm = ({ onClose, bookToEdit }) => {
 
   useEffect(() => {
     if (bookToEdit) {
-      setValue('title', bookToEdit.title);
-      setValue('author', bookToEdit.author);
-      setValue('year', bookToEdit.year);
-      setValue('genre', bookToEdit.genre);
-      setValue('rating', bookToEdit.rating);
-      setValue('description', bookToEdit.description);
+      Object.entries(bookToEdit).forEach(([name, value]) => {
+        setValue(name, value);
+      });
     }
   }, [bookToEdit, setValue]);
 
