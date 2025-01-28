@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
 import { store } from './redux/store';
 import AppContent from './components/AppContent';
-import PhotosPage from './pages/PhotosPage';
-import TodosPage from './pages/TodosPage';
-import { ThemeProvider, CssBaseline, Switch as ToggleSwitch, FormControlLabel, Box } from '@mui/material';
+import PhotosPage from './pages/Photo/PhotosPage';
+import TodosPage from './pages/Todos/TodosPage';
+import TodoDetailPage from './pages/Todos/TodoDetailPage';
+import PhotoDetailPage from './pages/Photo/PhotoDetailPage';
+import { ThemeProvider, CssBaseline, Switch as ToggleSwitch, FormControlLabel, Box, Tooltip } from '@mui/material';
 import { lightTheme, darkTheme } from './components/Themes';
+import NavBar from './components/NavBar';
+import { TodosProvider } from './pages/Todos/TodosContext';
+import { PhotosProvider } from './pages/Photo/PhotosContext';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -27,22 +32,38 @@ const App = () => {
       <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <CssBaseline />
         <Box sx={{ position: 'relative' }}>
-          <FormControlLabel
-            control={<ToggleSwitch checked={isDarkMode} onChange={toggleTheme} />}
-            label={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}
-            sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}
-          />
+          <Tooltip title={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}>
+            <FormControlLabel
+              control={<ToggleSwitch checked={isDarkMode} onChange={toggleTheme} />}
+              sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}
+            />
+          </Tooltip>
           <Router>
-            <Routes>
-              <Route path="/" element={<AppContent />} />
-              <Route path="/photos" element={<PhotosPage />} />
-              <Route path="/todos" element={<TodosPage />} />
-            </Routes>
+            <TodosProvider>
+              <PhotosProvider>
+                <Routes>
+                  <Route path="/" element={<Layout />}>
+                    <Route index element={<AppContent />} />
+                    <Route path="photos" element={<PhotosPage />} />
+                    <Route path="photos/:id" element={<PhotoDetailPage />} />
+                    <Route path="todos" element={<TodosPage />} />
+                    <Route path="todos/:id" element={<TodoDetailPage />} />
+                  </Route>
+                </Routes>
+              </PhotosProvider>
+            </TodosProvider>
           </Router>
         </Box>
       </ThemeProvider>
     </Provider>
   );
 };
+
+const Layout = () => (
+  <>
+    <NavBar />
+    <Outlet />
+  </>
+);
 
 export default App;
