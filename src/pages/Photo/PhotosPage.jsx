@@ -1,11 +1,27 @@
 import React from 'react';
 import { Container, Box, Snackbar, CircularProgress, Card, CardMedia } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { usePhotos } from './PhotosContext';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import photoUrls from './photoUrls';
+
+const fetchPhotos = async () => {
+  const response = await axios.get('https://jsonplaceholder.typicode.com/photos?_limit=20');
+  return response.data;
+};
 
 const PhotosPage = () => {
-  const { photos, error, loading } = usePhotos();
   const navigate = useNavigate();
+
+  const { data: photos, error, isLoading } = useQuery({
+    queryKey: ['photos'], // Изменено на массив
+    queryFn: fetchPhotos,
+  });
+
+  const updatedPhotos = photos?.map((photo, index) => ({
+    ...photo,
+    url: photoUrls[index]
+  }));
 
   const handlePhotoClick = (id) => {
     navigate(`/photos/${id}`);
@@ -14,14 +30,14 @@ const PhotosPage = () => {
   return (
     <Container maxWidth="lg">
       <Container sx={{ mt: 4 }}>
-        {error && <Snackbar open={!!error} message={error} autoHideDuration={6000} />}
-        {loading ? (
+        {error && <Snackbar open={!!error} message={error.message} autoHideDuration={6000} />}
+        {isLoading ? (
           <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
             <CircularProgress />
           </Box>
         ) : (
           <Box display="flex" flexWrap="wrap" justifyContent="center" gap={2}>
-            {photos.map(photo => (
+            {updatedPhotos?.map(photo => (
               <Card
                 key={photo.id}
                 sx={{

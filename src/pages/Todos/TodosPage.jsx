@@ -1,22 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, ButtonGroup, Checkbox, ListItemIcon, Snackbar, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useTodos } from './TodosContext';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+
+const fetchTodos = async () => {
+  const response = await axios.get('https://jsonplaceholder.typicode.com/todos?_limit=20');
+  return response.data;
+};
 
 const TodosPage = () => {
-  const { todos, setTodos, error, loading } = useTodos();
-  const [filter, setFilter] = React.useState('all');
+  const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
 
+  const { data: todos, error, isLoading } = useQuery({
+    queryKey: ['todos'], // Изменено на массив
+    queryFn: fetchTodos,
+  });
+
   const handleToggle = (id) => {
-    setTodos(prevTodos =>
-      prevTodos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+    const updatedTodos = todos.map(todo =>
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
+    queryClient.setQueryData(['todos'], updatedTodos); // Изменено на массив
   };
 
-  const filteredTodos = todos.filter(todo => {
+  const filteredTodos = todos?.filter(todo => {
     if (filter === 'completed') {
       return todo.completed;
     } else if (filter === 'notCompleted') {
@@ -37,23 +46,19 @@ const TodosPage = () => {
           <Button onClick={() => setFilter('completed')}>Выполненные задачи</Button>
           <Button onClick={() => setFilter('notCompleted')}>Невыполненные задачи</Button>
         </ButtonGroup>
-        {error && <Snackbar open={!!error} message={error} autoHideDuration={6000} />}
-        {loading ? (
+        {error && <Snackbar open={!!error} message={error.message} autoHideDuration={6000} />}
+        {isLoading ? (
           <Typography variant="body1">Загрузка задач...</Typography>
         ) : (
           <List>
-            {filteredTodos.map((todo, index) => (
+            {filteredTodos?.map((todo, index) => (
               <ListItem
                 key={todo.id}
-                style={{ cursor: 'pointer' }}
+                className="list-item"
                 onClick={() => handleTodoClick(todo.id)}
-                onMouseEnter={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-                onMouseLeave={(e) => (e.currentTarget.style.textDecoration = 'none')}
               >
                 <ListItemIcon
                   onClick={(e) => e.stopPropagation()}
-                  onMouseEnter={(e) => e.stopPropagation()}
-                  onMouseLeave={(e) => e.stopPropagation()}
                 >
                   <Checkbox
                     edge="start"

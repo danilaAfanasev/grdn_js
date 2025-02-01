@@ -1,13 +1,38 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Typography, Button, Card, CardMedia, CardContent, CardActions } from '@mui/material';
-import { usePhotos } from './PhotosContext';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import photoUrls from './photoUrls';
+
+const fetchPhotos = async () => {
+  const response = await axios.get('https://jsonplaceholder.typicode.com/photos?_limit=20');
+  return response.data;
+};
 
 const PhotoDetailPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { photos } = usePhotos();
-  const photo = photos.find(photo => photo.id === parseInt(id));
+
+  const { data: photos, error, isLoading } = useQuery({
+    queryKey: ['photos'], // Изменено на массив
+    queryFn: fetchPhotos,
+  });
+
+  const updatedPhotos = photos?.map((photo, index) => ({
+    ...photo,
+    url: photoUrls[index]
+  }));
+
+  const photo = updatedPhotos?.find(photo => photo.id === parseInt(id));
+
+  if (isLoading) {
+    return <Typography>Загрузка...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Ошибка загрузки фотографии</Typography>;
+  }
 
   if (!photo) {
     return <Typography>Фотография не найдена</Typography>;

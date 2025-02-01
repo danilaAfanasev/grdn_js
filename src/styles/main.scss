@@ -20,11 +20,11 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
 
-.app-header h1 {
-  margin: 0;
-  font-size: 24px;
+  h1 {
+    margin: 0;
+    font-size: 24px;
+  }
 }
 
 .add-book-button {
@@ -34,30 +34,30 @@ body {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
 
-.add-book-button:hover {
-  background-color: #0056b3;
+  &:hover {
+    background-color: #0056b3;
+  }
 }
 
 .controls {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
-}
 
-.controls > div {
-  margin-right: 10px;
-}
+  > div {
+    margin-right: 10px;
+  }
 
-.controls label {
-  margin-right: 10px;
-}
+  label {
+    margin-right: 10px;
+  }
 
-.controls select, .controls input {
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  select, input {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 }
 
 .book-stats {
@@ -67,10 +67,10 @@ body {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
-}
 
-.book-stats p {
-  margin: 0;
+  p {
+    margin: 0;
+  }
 }
 
 .book-list {
@@ -84,46 +84,51 @@ body {
   align-items: center;
   padding: 10px;
   border-bottom: 1px solid #ccc;
-}
 
-.book-item:last-child {
-  border-bottom: none;
-}
+  &:last-child {
+    border-bottom: none;
+  }
 
-.book-info {
-  flex: 1;
-  display: flex;
-  align-items: center;
-}
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 
-.book-info input[type="checkbox"] {
-  margin-right: 10px;
-}
+  .book-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
 
-.book-info h3, .book-info p {
-  margin: 0;
-}
+    input[type="checkbox"] {
+      margin-right: 10px;
+    }
 
-.book-actions {
-  display: flex;
-  align-items: center;
-}
+    h3, p {
+      margin: 0;
+    }
+  }
 
-.book-actions .MuiRating-root {
-  margin-right: 10px;
-}
+  .book-actions {
+    display: flex;
+    align-items: center;
 
-.book-actions button {
-  padding: 5px 10px;
-  background-color: #dc3545;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+    .MuiRating-root {
+      margin-right: 10px;
+    }
 
-.book-actions button:hover {
-  background-color: #c82333;
+    button {
+      padding: 5px 10px;
+      background-color: #dc3545;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #c82333;
+      }
+    }
+  }
 }
 
 .modal {
@@ -136,107 +141,114 @@ body {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
-}
 
-.modal-content {
-  background-color: #fff;
-  margin: 15% auto;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 600px;
-}
+  .modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
 
-.modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-}
+      h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+    }
 
-.close {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
+    .close {
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
 
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-}
+      &:hover,
+      &:focus {
+        color: black;
+        text-decoration: none;
+      }
+    }
 
-.modal-form {
-  display: flex;
-  flex-direction: column;
-}
+    .modal-form {
+      display: flex;
+      flex-direction: column;
 
-.modal-form .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
 
-.modal-form .form-group label {
-  margin-bottom: 5px;
-}
+        label {
+          margin-bottom: 5px;
+        }
 
-.modal-form .form-group input, .modal-form .form-group select {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+        input, select {
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+      }
 
-.modal-form .rating-label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
+      .rating-label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
 
-.modal-form .rating-label label {
-  margin-right: 10px;
-}
+        label {
+          margin-right: 10px;
+        }
+      }
 
-.modal-form .rating-input {
-  display: flex;
-  align-items: center;
-}
+      .rating-input {
+        display: flex;
+        align-items: center;
 
-.modal-form .MuiRating-root {
-  margin-right: 10px;
-}
+        .MuiRating-root {
+          margin-right: 10px;
+        }
+      }
 
-.modal-form button {
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 20px;
-}
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 20px;
 
-.modal-form button:hover {
-  background-color: #0056b3;
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+  }
 }
 
 .select-all {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-}
 
-.select-all label {
-  margin-left: 10px;
+  label {
+    margin-left: 10px;
+  }
 }
 
 .active-link {
   text-decoration: underline;
+}
+
+.list-item {
+  &:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 }

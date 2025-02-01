@@ -1,14 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
-
-const PhotosContext = createContext();
-
-export const PhotosProvider = ({ children }) => {
-  const [photos, setPhotos] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const imageUrls = [
+const photoUrls = [
     'https://images.wallpaperscraft.com/image/single/lake_mountain_tree_36589_2650x1600.jpg',
     'https://avatars.mds.yandex.net/i?id=6c2bda59576dd941127efb12a0072a57_l-9107081-images-thumbs&n=13',
     'https://i.pinimg.com/originals/ba/bd/6d/babd6d37eb2dd965c7f1dfb516d54094.jpg',
@@ -31,32 +21,6 @@ export const PhotosProvider = ({ children }) => {
     'https://wallpapers.com/images/hd/3d-waterfall-1920-x-1280-wallpaper-h3mefn9cnkbhgzb8.jpg',
     'https://i.pinimg.com/originals/5d/e2/42/5de24294bad21ec99931f4c362354f22.jpg'
   ];
-
-  useEffect(() => {
-    axios.get('https://jsonplaceholder.typicode.com/photos?_limit=20')
-      .then(response => {
-        console.log('Fetched photos:', response.data);
-        const updatedPhotos = response.data.map((photo, index) => ({
-          ...photo,
-          url: imageUrls[index]
-        }));
-        setPhotos(updatedPhotos);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching photos:', error);
-        setError('Не удалось загрузить фотографии. Пожалуйста, попробуйте позже.');
-        setLoading(false);
-      });
-  }, []);
-
-  return (
-    <PhotosContext.Provider value={{ photos, setPhotos, error, loading }}>
-      {children}
-    </PhotosContext.Provider>
-  );
-};
-
-export const usePhotos = () => {
-  return useContext(PhotosContext);
-};
+  
+  export default photoUrls;
+  
