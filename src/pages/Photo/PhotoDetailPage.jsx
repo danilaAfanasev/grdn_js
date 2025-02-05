@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Container, Typography, Button, Card, CardMedia, CardContent, CardActions } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import photoUrls from './photoUrls';
+import { photoUrls } from './photoUrls';
 
 const fetchPhotos = async () => {
   const response = await axios.get('https://jsonplaceholder.typicode.com/photos?_limit=20');
@@ -15,7 +15,7 @@ const PhotoDetailPage = () => {
   const { id } = useParams();
 
   const { data: photos, error, isLoading } = useQuery({
-    queryKey: ['photos'], // Изменено на массив
+    queryKey: ['photos'],
     queryFn: fetchPhotos,
   });
 

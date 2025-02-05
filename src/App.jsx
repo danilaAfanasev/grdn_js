@@ -7,6 +7,7 @@ import PhotosPage from './pages/Photo/PhotosPage';
 import TodosPage from './pages/Todos/TodosPage';
 import TodoDetailPage from './pages/Todos/TodoDetailPage';
 import PhotoDetailPage from './pages/Photo/PhotoDetailPage';
+import UsersTable from './pages/UsersTable/UsersTable';
 import { ThemeProvider, CssBaseline, Switch as ToggleSwitch, FormControlLabel, Box, Tooltip } from '@mui/material';
 import { lightTheme, darkTheme } from './components/Themes';
 import NavBar from './components/NavBar';
@@ -46,6 +47,7 @@ const App = () => {
                   <Route path="photos/:id" element={<PhotoDetailPage />} />
                   <Route path="todos" element={<TodosPage />} />
                   <Route path="todos/:id" element={<TodoDetailPage />} />
+                  <Route path="users" element={<UsersTable />} />
                 </Route>
               </Routes>
             </Router>

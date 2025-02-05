@@ -14,7 +14,7 @@ const TodoDetailPage = () => {
   const { id } = useParams();
 
   const { data: todos, error, isLoading } = useQuery({
-    queryKey: ['todos'], // Изменено на массив
+    queryKey: ['todos'],
     queryFn: fetchTodos,
   });
 

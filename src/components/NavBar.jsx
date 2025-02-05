@@ -42,6 +42,16 @@ const NavBar = () => {
           >
             Список дел
           </Link>
+          {' | '}
+          <Link
+            component={RouterLink}
+            to="/users"
+            color="inherit"
+            underline="none"
+            sx={{ textDecoration: location.pathname === '/users' ? 'underline' : 'none' }}
+          >
+            Пользователи
+          </Link>
         </Typography>
       </Toolbar>
     </AppBar>

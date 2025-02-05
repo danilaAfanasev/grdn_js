@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, ButtonGroup, Checkbox, ListItemIcon, Snackbar, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 const fetchTodos = async () => {
@@ -12,9 +12,10 @@ const fetchTodos = async () => {
 const TodosPage = () => {
   const [filter, setFilter] = useState('all');
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: todos, error, isLoading } = useQuery({
-    queryKey: ['todos'], // Изменено на массив
+    queryKey: ['todos'],
     queryFn: fetchTodos,
   });
 
@@ -22,7 +23,7 @@ const TodosPage = () => {
     const updatedTodos = todos.map(todo =>
       todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
-    queryClient.setQueryData(['todos'], updatedTodos); // Изменено на массив
+    queryClient.setQueryData(['todos'], updatedTodos);
   };
 
   const filteredTodos = todos?.filter(todo => {
@@ -42,9 +43,24 @@ const TodosPage = () => {
     <Container maxWidth="lg">
       <Container sx={{ mt: 4 }}>
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
-          <Button onClick={() => setFilter('all')}>Все задачи</Button>
-          <Button onClick={() => setFilter('completed')}>Выполненные задачи</Button>
-          <Button onClick={() => setFilter('notCompleted')}>Невыполненные задачи</Button>
+          <Button
+            onClick={() => setFilter('all')}
+            variant={filter === 'all' ? 'contained' : 'outlined'}
+          >
+            Все задачи
+          </Button>
+          <Button
+            onClick={() => setFilter('completed')}
+            variant={filter === 'completed' ? 'contained' : 'outlined'}
+          >
+            Выполненные задачи
+          </Button>
+          <Button
+            onClick={() => setFilter('notCompleted')}
+            variant={filter === 'notCompleted' ? 'contained' : 'outlined'}
+          >
+            Невыполненные задачи
+          </Button>
         </ButtonGroup>
         {error && <Snackbar open={!!error} message={error.message} autoHideDuration={6000} />}
         {isLoading ? (
@@ -57,18 +73,17 @@ const TodosPage = () => {
                 className="list-item"
                 onClick={() => handleTodoClick(todo.id)}
               >
-                <ListItemIcon
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <ListItemIcon>
                   <Checkbox
                     edge="start"
                     checked={todo.completed}
                     onChange={() => handleToggle(todo.id)}
+                    onClick={(e) => e.stopPropagation()}
                   />
                 </ListItemIcon>
                 <ListItemText
                   primary={`${index + 1}. ${todo.title}`}
-                  style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}
+                  className={todo.completed ? 'completed' : ''}
                 />
               </ListItem>
             ))}
