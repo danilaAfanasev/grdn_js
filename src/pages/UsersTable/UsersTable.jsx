@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Box } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 import ModalWindow from './ModalWindow';
+import { Male as MaleIcon, Female as FemaleIcon } from '@mui/icons-material';
+import { useAddUser, useEditUser, useDeleteUser } from '../../hooks/useQuery';
 
 const fetchUsers = async () => {
   const response = await axios.get('https://backend.s3grdn.ru/api/test');
@@ -13,33 +15,20 @@ const fetchUsers = async () => {
 const UsersTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
+  const [showPassword, setShowPassword] = useState({});
   const queryClient = useQueryClient();
 
-  const { data: users, error, isLoading } = useQuery({
+  const { data: users = [], error, isLoading } = useQuery({
     queryKey: ['users'],
     queryFn: fetchUsers,
-  });
-
-  const addUserMutation = useMutation({
-    mutationFn: (newUser) => axios.post('https://backend.s3grdn.ru/api/test', newUser),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['users']);
+    onError: (error) => {
+      console.error('Error fetching users:', error);
     },
   });
 
-  const editUserMutation = useMutation({
-    mutationFn: (updatedUser) => axios.post('https://backend.s3grdn.ru/api/test', updatedUser),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['users']);
-    },
-  });
-
-  const deleteUserMutation = useMutation({
-    mutationFn: (id) => axios.delete('https://backend.s3grdn.ru/api/test', { data: { id } }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['users']);
-    },
-  });
+  const addUserMutation = useAddUser();
+  const editUserMutation = useEditUser();
+  const deleteUserMutation = useDeleteUser();
 
   const openModal = (user = null) => {
     setUserToEdit(user);
@@ -69,6 +58,13 @@ const UsersTable = () => {
     deleteUserMutation.mutate(id);
   };
 
+  const togglePasswordVisibility = (userId) => {
+    setShowPassword((prevState) => ({
+      ...prevState,
+      [userId]: !prevState[userId],
+    }));
+  };
+
   if (isLoading) {
     return <div>Загрузка...</div>;
   }
@@ -79,8 +75,8 @@ const UsersTable = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
-        <Button variant="contained" color="primary" onClick={() => openModal()}>
+      <Box display="flex" justifyContent="flex-end" mb={2} mt={2}>
+        <Button variant="contained" color="primary" onClick={() => openModal()} sx={{ marginRight: 2 }}>
           Добавить пользователя
         </Button>
       </Box>
@@ -88,31 +84,57 @@ const UsersTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Имя</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Логин</TableCell>
-              <TableCell>Дата рождения</TableCell>
-              <TableCell>Пол</TableCell>
-              <TableCell>Дата</TableCell>
-              <TableCell>Действия</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Имя</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '200px' }}>Email</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Логин</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Дата рождения</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '100px' }}>Пол</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Дата</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '200px' }}>Пароль</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '100px' }}>Действия</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user._id} onMouseEnter={() => {}} onMouseLeave={() => {}}>
+            {Array.isArray(users) && users.map((user) => (
+              <TableRow
+                key={user._id}
+                sx={{
+                  '&:hover': { backgroundColor: '#f5f5f5' },
+                  '&:hover .actions': { visibility: 'visible' },
+                }}
+              >
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.login}</TableCell>
                 <TableCell>{user.dateOfBirth}</TableCell>
-                <TableCell>{user.gender ? 'Мужской' : 'Женский'}</TableCell>
+                <TableCell>{user.gender ? <MaleIcon /> : <FemaleIcon />}</TableCell>
                 <TableCell>{user.date}</TableCell>
+                <TableCell
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
+                  {showPassword[user._id] ? user.password : '••••••••'}
+                  <IconButton
+                    onClick={() => togglePasswordVisibility(user._id)}
+                    sx={{ marginLeft: 1 }}
+                  >
+                    {showPassword[user._id] ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                </TableCell>
                 <TableCell>
-                  <IconButton onClick={() => openModal(user)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteUser(user._id)}>
-                    <DeleteIcon />
-                  </IconButton>
+                  <Box
+                    className="actions"
+                    sx={{
+                      display: 'flex',
+                      visibility: 'hidden',
+                    }}
+                  >
+                    <IconButton onClick={() => openModal(user)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteUser(user._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
