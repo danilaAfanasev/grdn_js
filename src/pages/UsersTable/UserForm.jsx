@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addUser, editUser } from '../../redux/userSlice';
-import { Controller } from 'react-hook-form';
-import { TextField, RadioGroup, FormControlLabel, Radio, Box, Typography, Alert, IconButton } from '@mui/material';
-import useUserForm from '../../hooks/useUserForm';
+import { Controller, useForm } from 'react-hook-form';
+import { TextField, RadioGroup, FormControlLabel, Radio, Box, Typography, Alert } from '@mui/material';
 import axios from 'axios';
-import { Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
 
 const UserForm = ({ onClose, userToEdit, onSubmit }) => {
   const dispatch = useDispatch();
-  const { register, handleSubmit, control, errors, setValue, watch } = useUserForm(
-    {
+  const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm({
+    defaultValues: {
       name: '',
       email: '',
       login: '',
@@ -19,45 +17,20 @@ const UserForm = ({ onClose, userToEdit, onSubmit }) => {
       dateOfBirth: '',
       gender: false,
       date: '',
-    },
-    async (data) => {
-      const newUser = {
-        _id: userToEdit ? userToEdit._id : undefined,
-        ...data,
-      };
-
-      if (data.password !== data.confirmPassword) {
-        setErrorMessage('Пароли не совпадают.');
-        return;
-      }
-
-      try {
-        const response = await axios.get('https://backend.s3grdn.ru/api/test');
-        const users = response.data;
-        const emailExists = users.some(user => user.email === newUser.email && user._id !== newUser._id);
-        const loginExists = users.some(user => user.login === newUser.login && user._id !== newUser._id);
-
-        if (emailExists) {
-          setErrorMessage('Пользователь с таким email уже существует.');
-        } else if (loginExists) {
-          setErrorMessage('Пользователь с таким логином уже существует.');
-        } else {
-          setErrorMessage('');
-          if (userToEdit) {
-            dispatch(editUser(newUser));
-          } else {
-            dispatch(addUser(newUser));
-          }
-          onSubmit(newUser);
-        }
-      } catch (error) {
-        console.error('Ошибка при проверке уникальности email и логина:', error);
-      }
     }
-  );
+  });
 
   const [errorMessage, setErrorMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const password = watch('password');
+  const confirmPassword = watch('confirmPassword');
+
+  useEffect(() => {
+    if (confirmPassword && password !== confirmPassword) {
+      setErrorMessage('Пароли не совпадают.');
+    } else {
+      setErrorMessage('');
+    }
+  }, [password, confirmPassword]);
 
   useEffect(() => {
     if (userToEdit) {
@@ -67,8 +40,38 @@ const UserForm = ({ onClose, userToEdit, onSubmit }) => {
     }
   }, [userToEdit, setValue]);
 
+  const onSubmitForm = async (data) => {
+    const newUser = {
+      _id: userToEdit ? userToEdit._id : undefined,
+      ...data,
+    };
+
+    try {
+      const response = await axios.get('https://backend.s3grdn.ru/api/test');
+      const users = response.data;
+      const emailExists = users.some(user => user.email === newUser.email && user._id !== newUser._id);
+      const loginExists = users.some(user => user.login === newUser.login && user._id !== newUser._id);
+
+      if (emailExists) {
+        setErrorMessage('Пользователь с таким email уже существует.');
+      } else if (loginExists) {
+        setErrorMessage('Пользователь с таким логином уже существует.');
+      } else {
+        setErrorMessage('');
+        if (userToEdit) {
+          dispatch(editUser(newUser));
+        } else {
+          dispatch(addUser(newUser));
+        }
+        onSubmit(newUser);
+      }
+    } catch (error) {
+      console.error('Ошибка при проверке уникальности email и логина:', error);
+    }
+  };
+
   return (
-    <form id="user-form" onSubmit={handleSubmit}>
+    <form id="user-form" onSubmit={handleSubmit(onSubmitForm)}>
       {errorMessage && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {errorMessage}
@@ -101,32 +104,24 @@ const UserForm = ({ onClose, userToEdit, onSubmit }) => {
         error={!!errors.login}
         helperText={errors.login?.message}
       />
-      <Box sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}>
-        <TextField
-          {...register('password')}
-          label="Пароль"
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          error={!!errors.password}
-          helperText={errors.password?.message}
-          type={showPassword ? 'text' : 'password'}
-        />
-        <IconButton
-          onClick={() => setShowPassword(!showPassword)}
-          sx={{ position: 'absolute', right: 10, top: '55%', transform: 'translateY(-50%)' }}
-        >
-          {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
-      </Box>
+      <TextField
+        {...register('password')}
+        label="Пароль"
+        variant="outlined"
+        margin="normal"
+        fullWidth
+        error={!!errors.password}
+        helperText={errors.password?.message}
+        type="password"
+      />
       <TextField
         {...register('confirmPassword')}
         label="Подтвердите пароль"
         variant="outlined"
         margin="normal"
         fullWidth
-        error={!!errors.confirmPassword}
-        helperText={errors.confirmPassword?.message}
+        error={!!errorMessage}
+        helperText={errorMessage}
         type="password"
       />
       <TextField

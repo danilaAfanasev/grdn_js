@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, IconButton, Box } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Visibility as VisibilityIcon, VisibilityOff as VisibilityOffIcon } from '@mui/icons-material';
@@ -7,20 +7,17 @@ import ModalWindow from './ModalWindow';
 import { Male as MaleIcon, Female as FemaleIcon } from '@mui/icons-material';
 import { useAddUser, useEditUser, useDeleteUser } from '../../hooks/useQuery';
 
-const fetchUsers = async () => {
-  const response = await axios.get('https://backend.s3grdn.ru/api/test');
-  return response.data;
-};
-
 const UsersTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userToEdit, setUserToEdit] = useState(null);
   const [showPassword, setShowPassword] = useState({});
-  const queryClient = useQueryClient();
 
   const { data: users = [], error, isLoading } = useQuery({
     queryKey: ['users'],
-    queryFn: fetchUsers,
+    queryFn: async () => {
+      const response = await axios.get('https://backend.s3grdn.ru/api/test');
+      return response.data;
+    },
     onError: (error) => {
       console.error('Error fetching users:', error);
     },
@@ -84,14 +81,13 @@ const UsersTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Имя</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '200px' }}>Email</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Логин</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Дата рождения</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '100px' }}>Пол</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '150px' }}>Дата</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '200px' }}>Пароль</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', padding: '16px', width: '100px' }}>Действия</TableCell>
+              <TableCell className="table-header" sx={{  width: '150px' }}>Имя</TableCell>
+              <TableCell className="table-header" sx={{  width: '200px' }}>Email</TableCell>
+              <TableCell className="table-header" sx={{  width: '150px' }}>Логин</TableCell>
+              <TableCell className="table-header" sx={{  width: '150px' }}>Дата рождения</TableCell>
+              <TableCell className="table-header" sx={{  width: '100px' }}>Пол</TableCell>
+              <TableCell className="table-header" sx={{  width: '150px' }}>Дата</TableCell>
+              <TableCell className="table-header" sx={{  width: '200px' }}>Пароль</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -110,7 +106,7 @@ const UsersTable = () => {
                 <TableCell>{user.gender ? <MaleIcon /> : <FemaleIcon />}</TableCell>
                 <TableCell>{user.date}</TableCell>
                 <TableCell
-                  sx={{ display: 'flex', alignItems: 'center' }}
+                  sx={{ display: 'flex', alignItems: 'center', position: 'relative' }}
                 >
                   {showPassword[user._id] ? user.password : '••••••••'}
                   <IconButton
@@ -119,13 +115,15 @@ const UsersTable = () => {
                   >
                     {showPassword[user._id] ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
-                </TableCell>
-                <TableCell>
                   <Box
                     className="actions"
                     sx={{
                       display: 'flex',
                       visibility: 'hidden',
+                      position: 'absolute',
+                      right: 50,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
                     }}
                   >
                     <IconButton onClick={() => openModal(user)}>
