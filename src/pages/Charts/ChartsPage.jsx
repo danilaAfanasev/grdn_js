@@ -1,43 +1,32 @@
 import React, { useState, useMemo } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import { Button, Box, useTheme, FormControlLabel, Checkbox, FormGroup, Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, DialogActions } from '@mui/material';
+import { Button, Box, useTheme, Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, DialogActions } from '@mui/material';
+import StackedBarChart from './StackedBarChart'; // Импортируем новый компонент
+
+const generateRandomData = () => Array.from({ length: 7 }, () => Math.floor(Math.random() * 31));
 
 const ChartsPage = () => {
   const theme = useTheme();
   const currentDayIndex = new Date().getDay() - 1;
-  
+
   const daysOfWeek = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
   const [data, setData] = useState({
-    department1: [10, 15, 12, 8, 20, 25, 18],
-    department2: [5, 12, 18, 25, 15, 10, 20],
-    department3: [20, 25, 18, 12, 8, 15, 10],
-  });
-
-  const [visibleSeries, setVisibleSeries] = useState({
-    department1: true,
-    department2: true,
-    department3: true,
+    department1: generateRandomData(),
+    department2: generateRandomData(),
+    department3: generateRandomData(),
   });
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const updateData = () => {
-    const newData = {
-      department1: Array.from({ length: 7 }, () => Math.floor(Math.random() * 31)),
-      department2: Array.from({ length: 7 }, () => Math.floor(Math.random() * 31)),
-      department3: Array.from({ length: 7 }, () => Math.floor(Math.random() * 31)),
-    };
-    setData(newData);
-  };
-
-  const toggleSeriesVisibility = (department) => {
-    setVisibleSeries((prev) => ({
-      ...prev,
-      [department]: !prev[department],
-    }));
+    setData({
+      department1: generateRandomData(),
+      department2: generateRandomData(),
+      department3: generateRandomData(),
+    });
   };
 
   const handleCategoryClick = (event) => {
@@ -77,6 +66,8 @@ const ChartsPage = () => {
       labels: {
         style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
       },
+      lineColor: theme.palette.mode === 'dark' ? '#555' : '#ccc',
+      tickColor: theme.palette.mode === 'dark' ? '#555' : '#ccc',
     },
     yAxis: {
       title: {
@@ -89,9 +80,9 @@ const ChartsPage = () => {
       },
     },
     series: [
-      { name: 'Отдел 1', data: data.department1, color: '#1f77b4', visible: visibleSeries.department1 },
-      { name: 'Отдел 2', data: data.department2, color: '#ff7f0e', visible: visibleSeries.department2 },
-      { name: 'Отдел 3', data: data.department3, color: '#2ca02c', visible: visibleSeries.department3 },
+      { name: 'Отдел 1', data: data.department1, color: '#1f77b4' },
+      { name: 'Отдел 2', data: data.department2, color: '#ff7f0e' },
+      { name: 'Отдел 3', data: data.department3, color: '#2ca02c' },
     ],
     tooltip: {
       shared: true,
@@ -114,11 +105,11 @@ const ChartsPage = () => {
       layout: 'vertical',
       itemStyle: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
     },
-  }), [data, visibleSeries, theme]);
+  }), [data, theme]);
 
   return (
-    <Box sx={{ position: 'relative', padding: '20px', display: 'flex' }}>
-      <Box sx={{ flex: 1 }}>
+    <Box sx={{ position: 'relative', padding: '20px', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flex: 1, marginBottom: '20px' }}>
         <HighchartsReact highcharts={Highcharts} options={options} />
         <Button
           variant="contained"
@@ -130,21 +121,8 @@ const ChartsPage = () => {
         </Button>
       </Box>
 
-      <Box sx={{ marginLeft: '20px', display: 'flex', flexDirection: 'column' }}>
-        <FormGroup>
-          <FormControlLabel
-            control={<Checkbox checked={visibleSeries.department1} onChange={() => toggleSeriesVisibility('department1')} />}
-            label="Отдел 1"
-          />
-          <FormControlLabel
-            control={<Checkbox checked={visibleSeries.department2} onChange={() => toggleSeriesVisibility('department2')} />}
-            label="Отдел 2"
-          />
-          <FormControlLabel
-            control={<Checkbox checked={visibleSeries.department3} onChange={() => toggleSeriesVisibility('department3')} />}
-            label="Отдел 3"
-          />
-        </FormGroup>
+      <Box sx={{ marginTop: '20px' }}>
+        <StackedBarChart /> {/* Добавляем новый график */}
       </Box>
 
       <Dialog open={modalOpen} onClose={() => setModalOpen(false)} maxWidth="md">
