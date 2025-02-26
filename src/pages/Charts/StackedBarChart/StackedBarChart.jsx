@@ -14,46 +14,55 @@ const StackedBarChart = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const getThemeColors = () => ({
+    background: theme.palette.mode === 'dark' ? '#333' : '#fff',
+    text: theme.palette.mode === 'dark' ? '#fff' : '#333',
+    gridLine: theme.palette.mode === 'dark' ? '#555' : '#e6e6e6',
+    axisLine: theme.palette.mode === 'dark' ? '#555' : '#ccc',
+  });
+
+  const themeColors = getThemeColors();
+
   const options = {
     chart: {
       type: 'column',
-      backgroundColor: theme.palette.mode === 'dark' ? '#333' : '#fff',
-      style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+      backgroundColor: themeColors.background,
+      style: { color: themeColors.text },
       animation: {
         duration: 1000,
       },
     },
     title: {
       text: 'Продажи по категориям за кварталы',
-      style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+      style: { color: themeColors.text },
     },
     xAxis: {
       categories: ['Q1', 'Q2', 'Q3', 'Q4'],
       title: {
         text: 'Кварталы',
-        style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+        style: { color: themeColors.text },
       },
       labels: {
-        style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+        style: { color: themeColors.text },
       },
-      lineColor: theme.palette.mode === 'dark' ? '#555' : '#ccc',
-      tickColor: theme.palette.mode === 'dark' ? '#555' : '#ccc',
+      lineColor: themeColors.axisLine,
+      tickColor: themeColors.axisLine,
     },
     yAxis: {
       min: 0,
       title: {
         text: 'Сумма продаж',
-        style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+        style: { color: themeColors.text },
       },
-      gridLineColor: theme.palette.mode === 'dark' ? '#555' : '#e6e6e6',
+      gridLineColor: themeColors.gridLine,
       labels: {
-        style: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+        style: { color: themeColors.text },
       },
       stackLabels: {
         enabled: true,
         style: {
           fontWeight: 'bold',
-          color: theme.palette.mode === 'dark' ? '#fff' : 'gray',
+          color: themeColors.text === '#fff' ? '#fff' : 'white',
         },
       },
     },
@@ -61,7 +70,7 @@ const StackedBarChart = () => {
       align: 'right',
       verticalAlign: 'middle',
       layout: 'vertical',
-      itemStyle: { color: theme.palette.mode === 'dark' ? '#fff' : '#333' },
+      itemStyle: { color: themeColors.text },
     },
     tooltip: {
       headerFormat: '<b>{point.x}</b><br/>',
