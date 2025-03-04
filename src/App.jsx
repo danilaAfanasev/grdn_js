@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom';
 import { store } from './redux/store';
 import AppContent from './components/AppContent';
@@ -9,7 +9,8 @@ import TodoDetailPage from './pages/Todos/TodoDetailPage';
 import PhotoDetailPage from './pages/Photo/PhotoDetailPage';
 import UsersTable from './pages/UsersTable/UsersTable';
 import ChartsPage from './pages/Charts/ChartsPage';
-import { ThemeProvider, CssBaseline, Switch as ToggleSwitch, FormControlLabel, Box, Tooltip } from '@mui/material';
+import LoginPage from './pages/Login/LoginPage';
+import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { lightTheme, darkTheme } from './components/Themes';
 import NavBar from './components/NavBar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -25,7 +26,7 @@ const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(getSavedTheme);
 
   const toggleTheme = () => {
-    setIsDarkMode(prevMode => !prevMode);
+    setIsDarkMode((prevMode) => !prevMode);
   };
 
   return (
@@ -34,15 +35,9 @@ const App = () => {
         <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
           <CssBaseline />
           <Box sx={{ position: 'relative' }}>
-            <Tooltip title={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}>
-              <FormControlLabel
-                control={<ToggleSwitch checked={isDarkMode} onChange={toggleTheme} />}
-                sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1000 }}
-              />
-            </Tooltip>
             <Router>
               <Routes>
-                <Route path="/" element={<Layout />}>
+                <Route path="/" element={<Layout isDarkMode={isDarkMode} toggleTheme={toggleTheme} />}>
                   <Route index element={<AppContent />} />
                   <Route path="photos" element={<PhotosPage />} />
                   <Route path="photos/:id" element={<PhotoDetailPage />} />
@@ -60,11 +55,17 @@ const App = () => {
   );
 };
 
-const Layout = () => (
-  <>
-    <NavBar />
-    <Outlet />
-  </>
-);
+const Layout = ({ isDarkMode, toggleTheme }) => {
+  const authed = useSelector((state) => state.auth.authed);
+
+  return authed ? (
+    <>
+      <NavBar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+      <Outlet />
+    </>
+  ) : (
+    <LoginPage />
+  );
+};
 
 export default App;
