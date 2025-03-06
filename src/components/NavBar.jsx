@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../redux/authSlice';
 import { AppBar, Toolbar, Typography, IconButton, Link, Button, Switch, FormControlLabel } from '@mui/material';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -9,6 +9,7 @@ import { Link as RouterLink, useLocation } from 'react-router-dom';
 const NavBar = ({ isDarkMode, toggleTheme }) => {
   const location = useLocation();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -71,6 +72,11 @@ const NavBar = ({ isDarkMode, toggleTheme }) => {
             Графики
           </Link>
         </Typography>
+        {user && (
+          <Typography variant="subtitle1" sx={{ mr: 2, color: 'inherit' }}>
+            Привет, {user.name}!
+          </Typography>
+        )}
         <FormControlLabel
           control={<Switch checked={isDarkMode} onChange={toggleTheme} color="default" />}
           label={undefined}
@@ -83,9 +89,7 @@ const NavBar = ({ isDarkMode, toggleTheme }) => {
           sx={{
             textTransform: 'none',
             fontWeight: 'normal',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 255, 255, 0.1)',
-            },
+            '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
           }}
         >
           Выйти

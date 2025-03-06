@@ -6,10 +6,16 @@ import YearlyBarChart from './YearlyBarChart/YearlyBarChart';
 
 const ChartsPage = () => {
   return (
-    <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <BarChart />
-      <StackedBarChart />
-      <YearlyBarChart />
+    <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+        <BarChart />
+      </Box>
+      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+        <StackedBarChart />
+      </Box>
+      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+        <YearlyBarChart />
+      </Box>
     </Box>
   );
 };

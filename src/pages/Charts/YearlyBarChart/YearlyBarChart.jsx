@@ -1,32 +1,28 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { Button, Box, useTheme } from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 
 const API_URL = 'https://backend.s3grdn.ru/api/test/barchart';
 
+const fetchChartData = async (year) => {
+  const response = await axios.get(`${API_URL}/${year}`);
+  return response.data.map((item) => ({
+    name: item.Name,
+    data: item.Data.map((value) => parseFloat(value.replace(',', '.'))),
+  }));
+};
+
 const YearlyBarChart = () => {
   const theme = useTheme();
   const [year, setYear] = useState(2024);
-  const [chartData, setChartData] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/${year}`);
-        const formattedData = response.data.map(item => ({
-          name: item.Name,
-          data: item.Data.map(value => parseFloat(value.replace(',', '.'))),
-        }));
-        setChartData(formattedData);
-      } catch (error) {
-        console.error('Ошибка при загрузке данных:', error);
-      }
-    };
-
-    fetchData();
-  }, [year]);
+  const { data: chartData = [], isLoading } = useQuery({
+    queryKey: ['chartData', year],
+    queryFn: () => fetchChartData(year),
+  });
 
   const currentMonthIndex = new Date().getMonth();
 
@@ -39,7 +35,7 @@ const YearlyBarChart = () => {
 
   const themeColors = getThemeColors();
 
-  const options = useMemo(() => ({
+  const options = {
     chart: {
       type: 'column',
       backgroundColor: themeColors.background,
@@ -51,7 +47,7 @@ const YearlyBarChart = () => {
     xAxis: {
       categories: [
         'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
-        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+        'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
       ],
       title: { text: 'Месяцы', style: { color: themeColors.text } },
       plotLines: [
@@ -85,12 +81,13 @@ const YearlyBarChart = () => {
       itemStyle: { color: themeColors.text },
     },
     tooltip: {
-      shared: true,
+      pointFormat: '{series.name}: <b>{point.y} млн</b>',
       valueSuffix: ' млн',
     },
     plotOptions: {
       column: {
         dataLabels: { enabled: false },
+        borderWidth: 0,
       },
     },
     series: chartData.map((item, index) => ({
@@ -98,21 +95,25 @@ const YearlyBarChart = () => {
       data: item.data,
       color: ['#2ca02c', '#1f77b4', '#ff7f0e', '#d62728'][index],
     })),
-  }), [chartData, themeColors, year]);
+    accessibility: {
+      enabled: false,
+    },
+  };
 
   return (
-    <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => setYear(prev => (prev === 2024 ? 2023 : 2024))}
-        sx={{ alignSelf: 'flex-end', marginBottom: '20px' }}
-      >
-        Показать {year === 2024 ? '2023' : '2024'} год
-      </Button>
-
-      <HighchartsReact highcharts={Highcharts} options={options} />
-    </Box>
+    <>
+      <Box sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setYear((prev) => (prev === 2024 ? 2023 : 2024))}
+          sx={{ minWidth: '150px' }}
+        >
+          Показать {year === 2024 ? '2023' : '2024'} год
+        </Button>
+      </Box>
+      {isLoading ? <div>Загрузка...</div> : <HighchartsReact highcharts={Highcharts} options={options} />}
+    </>
   );
 };
 

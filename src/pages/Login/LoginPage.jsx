@@ -1,26 +1,36 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/authSlice';
-import { Container, TextField, Button, Typography, Box, Alert, InputAdornment,Fade } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Container, TextField, Button, Typography, Box, Alert, InputAdornment, Fade, Link } from '@mui/material';
 import { AccountCircle, Lock, Login as LoginIcon } from '@mui/icons-material';
 import '../../styles/main.scss';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [error, setError] = useState('');
 
-  const CORRECT_LOGIN = 'admin';
-  const CORRECT_PASSWORD = '12345';
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loginInput === CORRECT_LOGIN && passwordInput === CORRECT_PASSWORD) {
-      dispatch(login());
-      setError('');
-    } else {
-      setError('Неверный логин или пароль');
+    try {
+      const response = await axios.get('https://backend.s3grdn.ru/api/test');
+      const users = response.data;
+
+      const user = users.find((u) => u.login === loginInput && String(u.password) === passwordInput);
+
+      if (user) {
+        dispatch(login(user));
+        setError('');
+        navigate('/');
+      } else {
+        setError('Неверный логин или пароль');
+      }
+    } catch (err) {
+      setError('Ошибка при запросе к серверу');
     }
   };
 
@@ -64,19 +74,12 @@ const LoginPage = () => {
           <Typography
             variant="h4"
             gutterBottom
-            sx={{
-              fontWeight: 'bold',
-              color: 'primary.main',
-              textAlign: 'center',
-            }}
+            sx={{ fontWeight: 'bold', color: 'primary.main', textAlign: 'center' }}
           >
-            Добро пожаловать
+            Вход
           </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{ mb: 3, color: 'text.secondary', textAlign: 'center' }}
-          >
-            Введите логин и пароль для входа
+          <Typography variant="subtitle1" sx={{ mb: 3, color: 'text.secondary', textAlign: 'center' }}>
+            Введите логин и пароль
           </Typography>
           <form onSubmit={handleSubmit} style={{ width: '100%' }}>
             <TextField
@@ -93,11 +96,7 @@ const LoginPage = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '12px',
-                },
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             />
             <TextField
               label="Пароль"
@@ -114,11 +113,7 @@ const LoginPage = () => {
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: '12px',
-                },
-              }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             />
             {error && (
               <Fade in={!!error}>
@@ -140,14 +135,18 @@ const LoginPage = () => {
                 textTransform: 'none',
                 fontSize: '1.1rem',
                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-                '&:hover': {
-                  boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
-                },
+                '&:hover': { boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)' },
               }}
             >
               Войти
             </Button>
           </form>
+          <Typography sx={{ mt: 2 }}>
+            Нет аккаунта?{' '}
+            <Link component="button" onClick={() => navigate('/register')} underline="hover">
+              Зарегистрироваться
+            </Link>
+          </Typography>
         </Box>
       </Fade>
     </Container>

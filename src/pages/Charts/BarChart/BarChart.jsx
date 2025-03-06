@@ -16,7 +16,6 @@ const BarChart = () => {
     department2: generateRandomData(),
     department3: generateRandomData(),
   });
-
   const [selectedDayIndex, setSelectedDayIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -83,7 +82,7 @@ const BarChart = () => {
     tooltip: { shared: true, crosshairs: true },
     plotOptions: {
       series: {
-        borderColor: themeColors.axisLine,
+        borderWidth: 0,
         point: { events: { click: handleCategoryClick } },
       },
     },
@@ -94,27 +93,31 @@ const BarChart = () => {
       layout: 'vertical',
       itemStyle: { color: themeColors.text },
     },
+    accessibility: {
+      enabled: false,
+    },
   }), [data, themeColors]);
 
   return (
-    <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+    <>
+      <Box sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={updateData}
+          sx={{ minWidth: '150px' }}
+        >
+          Обновить данные
+        </Button>
+      </Box>
       <HighchartsReact highcharts={Highcharts} options={options} />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={updateData}
-        sx={{ display: 'block', marginTop: '20px', marginLeft: 'auto' }}
-      >
-        Обновить данные
-      </Button>
-
       <ModalWindow
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         data={data}
         selectedDayIndex={selectedDayIndex}
       />
-    </Box>
+    </>
   );
 };
 

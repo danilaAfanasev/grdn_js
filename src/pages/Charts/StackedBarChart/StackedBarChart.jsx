@@ -79,29 +79,19 @@ const StackedBarChart = () => {
     plotOptions: {
       column: {
         stacking: 'normal',
-        dataLabels: {
-          enabled: false,
-        },
+        dataLabels: { enabled: false },
+        borderWidth: 0,
       },
     },
     series: [
-      {
-        name: 'Категория A',
-        data: [120, 150, 130, 160],
-      },
-      {
-        name: 'Категория B',
-        data: [80, 90, 70, 100],
-      },
-      {
-        name: 'Категория C',
-        data: [50, 60, 55, 70],
-      },
-      {
-        name: 'Категория D',
-        data: [70, 90, 45, 105],
-      },
+      { name: 'Категория A', data: [120, 150, 130, 160] },
+      { name: 'Категория B', data: [80, 90, 70, 100] },
+      { name: 'Категория C', data: [50, 60, 55, 70] },
+      { name: 'Категория D', data: [70, 90, 45, 105] },
     ],
+    accessibility: {
+      enabled: false,
+    },
   };
 
   return loading ? <div>Загрузка...</div> : <HighchartsReact highcharts={Highcharts} options={options} />;
