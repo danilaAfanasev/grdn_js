@@ -3,17 +3,18 @@ import { Box } from '@mui/material';
 import BarChart from './BarChart/BarChart';
 import StackedBarChart from './StackedBarChart/StackedBarChart';
 import YearlyBarChart from './YearlyBarChart/YearlyBarChart';
+import './ChartsPage.css';
 
 const ChartsPage = () => {
   return (
     <Box sx={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+      <Box className="chart-container">
         <BarChart />
       </Box>
-      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+      <Box className="chart-container">
         <StackedBarChart />
       </Box>
-      <Box sx={{ position: 'relative', width: '100%', maxWidth: '1400px', height: '400px', mx: 'auto' }}>
+      <Box className="chart-container">
         <YearlyBarChart />
       </Box>
     </Box>

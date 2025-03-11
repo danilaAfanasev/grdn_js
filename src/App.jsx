@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Provider, useDispatch, useSelector } from 'react-redux'; // Добавлен useSelector
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Routes, Outlet, Navigate } from 'react-router-dom';
 import { store } from './redux/store';
 import { login } from './redux/authSlice';
@@ -13,6 +13,7 @@ import ChartsPage from './pages/Charts/ChartsPage';
 import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Login/RegisterPage';
 import Page404 from './pages/404/Page404';
+import TasksPage from './pages/Tasks/TasksPage';
 import { ThemeProvider, CssBaseline, Box } from '@mui/material';
 import { lightTheme, darkTheme } from './components/Themes';
 import NavBar from './components/NavBar';
@@ -90,6 +91,7 @@ const App = () => {
                   <Route path="todos/:id" element={<TodoDetailPage />} />
                   <Route path="users" element={<UsersTable />} />
                   <Route path="charts" element={<ChartsPage />} />
+                  <Route path="tasks" element={<TasksPage />} />
                 </Route>
                 <Route path="*" element={<Page404 />} />
               </Routes>

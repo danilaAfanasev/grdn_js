@@ -89,6 +89,9 @@ const StackedBarChart = () => {
       { name: 'Категория C', data: [50, 60, 55, 70] },
       { name: 'Категория D', data: [70, 90, 45, 105] },
     ],
+    credits: {
+      enabled: false,
+    },
     accessibility: {
       enabled: false,
     },

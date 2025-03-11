@@ -81,13 +81,13 @@ const UsersTable = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell className="table-header" sx={{  width: '150px' }}>Имя</TableCell>
-              <TableCell className="table-header" sx={{  width: '200px' }}>Email</TableCell>
-              <TableCell className="table-header" sx={{  width: '150px' }}>Логин</TableCell>
-              <TableCell className="table-header" sx={{  width: '150px' }}>Дата рождения</TableCell>
-              <TableCell className="table-header" sx={{  width: '100px' }}>Пол</TableCell>
-              <TableCell className="table-header" sx={{  width: '150px' }}>Дата</TableCell>
-              <TableCell className="table-header" sx={{  width: '200px' }}>Пароль</TableCell>
+              <TableCell className="table-header" sx={{ width: '150px' }}>Имя</TableCell>
+              <TableCell className="table-header" sx={{ width: '200px' }}>Email</TableCell>
+              <TableCell className="table-header" sx={{ width: '150px' }}>Логин</TableCell>
+              <TableCell className="table-header" sx={{ width: '150px' }}>Дата рождения</TableCell>
+              <TableCell className="table-header" sx={{ width: '100px' }}>Пол</TableCell>
+              <TableCell className="table-header" sx={{ width: '150px' }}>Дата</TableCell>
+              <TableCell className="table-header" sx={{ width: '200px' }}>Пароль</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -95,7 +95,12 @@ const UsersTable = () => {
               <TableRow
                 key={user._id}
                 sx={{
-                  '&:hover': { backgroundColor: '#f5f5f5' },
+                  '&:hover': {
+                    backgroundColor: '#f5f5f5',
+                    '& td': {
+                      color: 'black',
+                    },
+                  },
                   '&:hover .actions': { visibility: 'visible' },
                 }}
               >

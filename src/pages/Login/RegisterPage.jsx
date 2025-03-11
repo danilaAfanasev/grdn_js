@@ -1,29 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Container, TextField, Button, Typography, Box, Alert, InputAdornment, Fade, Link, RadioGroup, FormControlLabel, Radio } from '@mui/material';
-import { AccountCircle, Lock, PersonAdd as RegisterIcon, Email, Cake } from '@mui/icons-material';
+import { Container, TextField, Button, Typography, Box, Alert, InputAdornment, Fade, Link } from '@mui/material';
+import { AccountCircle, Lock, PersonAdd as RegisterIcon } from '@mui/icons-material';
 import '../../styles/main.scss';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [loginInput, setLoginInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [gender, setGender] = useState(false);
-  const [date, setDate] = useState('');
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (confirmPassword && passwordInput !== confirmPassword) {
-      setError('Пароли не совпадают');
-    } else if (error === 'Пароли не совпадают' && passwordInput === confirmPassword) {
-      setError('');
-    }
-  }, [passwordInput, confirmPassword]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,19 +29,14 @@ const RegisterPage = () => {
         return;
       }
 
-      if (users.some((u) => u.email === email)) {
-        setError('Пользователь с таким email уже существует');
-        return;
-      }
-
       const newUser = {
         name,
-        email,
         login: loginInput,
         password: passwordInput,
-        dateOfBirth,
-        gender,
-        date,
+        email: `${loginInput}@example.com`,
+        dateOfBirth: '01.01.1990',
+        gender: true,
+        date: '01.01.2023',
       };
 
       await axios.post('https://backend.s3grdn.ru/api/test', newUser);
@@ -128,22 +111,6 @@ const RegisterPage = () => {
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
             />
             <TextField
-              label="Email"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Email color="action" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
-            />
-            <TextField
               label="Логин"
               variant="outlined"
               fullWidth
@@ -188,49 +155,6 @@ const RegisterPage = () => {
                 startAdornment: (
                   <InputAdornment position="start">
                     <Lock color="action" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
-            />
-            <TextField
-              label="Дата рождения (DD.MM.YYYY)"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={dateOfBirth}
-              onChange={(e) => setDateOfBirth(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Cake color="action" />
-                  </InputAdornment>
-                ),
-              }}
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
-            />
-            <Typography variant="subtitle2" sx={{ mt: 2, mb: 1 }}>
-              Пол:
-            </Typography>
-            <RadioGroup
-              row
-              value={gender}
-              onChange={(e) => setGender(e.target.value === 'true')}
-            >
-              <FormControlLabel value={false} control={<Radio />} label="Женский" />
-              <FormControlLabel value={true} control={<Radio />} label="Мужской" />
-            </RadioGroup>
-            <TextField
-              label="Дата (DD.MM.YYYY)"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Cake color="action" />
                   </InputAdornment>
                 ),
               }}

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { Button, Box, useTheme } from '@mui/material';
@@ -18,6 +18,7 @@ const BarChart = () => {
   });
   const [selectedDayIndex, setSelectedDayIndex] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [autoUpdate, setAutoUpdate] = useState(true);
 
   const updateData = () => {
     setData({
@@ -26,6 +27,14 @@ const BarChart = () => {
       department3: generateRandomData(),
     });
   };
+
+  useEffect(() => {
+    let interval;
+    if (autoUpdate) {
+      interval = setInterval(updateData, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [autoUpdate]);
 
   const handleCategoryClick = (event) => {
     if (event.point) {
@@ -93,6 +102,9 @@ const BarChart = () => {
       layout: 'vertical',
       itemStyle: { color: themeColors.text },
     },
+    credits: {
+      enabled: false,
+    },
     accessibility: {
       enabled: false,
     },
@@ -104,10 +116,10 @@ const BarChart = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={updateData}
+          onClick={() => setAutoUpdate((prev) => !prev)}
           sx={{ minWidth: '150px' }}
         >
-          Обновить данные
+          {autoUpdate ? 'Выключить обновление' : 'Включить обновление'}
         </Button>
       </Box>
       <HighchartsReact highcharts={Highcharts} options={options} />
